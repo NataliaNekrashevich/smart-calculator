@@ -29,7 +29,16 @@ class SmartCalculator {
   }
 
   pow(number) {
-    let x = this.stack.pop();    
+    this.stack.push('^');
+    this.stack.push(number);
+    return this;
+  }
+
+  
+
+  valueOf(){
+    let array = this.stack;
+
     function powRealization(a, b){
       if(b == 0) return 1;
       let n = 1;
@@ -38,15 +47,14 @@ class SmartCalculator {
       }
       return n;
     }
-    this.stack.push(powRealization(x, number));
-    
-    return this;
-  }
 
-  
+    let c = array.lastIndexOf('^');
+    while(~c){
+      array[c-1]=powRealization(array[c - 1], array[c + 1]);
+      array.splice(c, 2);
+      c = array.lastIndexOf('^');
+    }
 
-  valueOf(){
-    let array = this.stack;
     function firstSimbol(a, b){
       if(!(~a || ~b)) return -1;
       if(~a && ~b){
@@ -55,6 +63,7 @@ class SmartCalculator {
       if(~a)  return a;
       else return b;
     }
+
     let a = array.indexOf('*');
     let b = array.indexOf('/');
     let i = firstSimbol(a, b) 
@@ -64,12 +73,14 @@ class SmartCalculator {
       array.splice(i, 2) 
       i = firstSimbol(array.indexOf('*'), array.indexOf('/'))     
     }
+
     i=1;
     while(array.length!==1){
       if(array[i] === '+')  array[i - 1] += array[i + 1];
       else  array[i - 1] -= array[i + 1];
       array.splice(i, 2) 
     }
+    
     return array[0];
   }
 }
